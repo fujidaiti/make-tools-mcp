@@ -2,6 +2,8 @@
 # Created by `dart pub`
 .dart_tool/
 pubspec.lock
+build/
+example/
 
 # FVM Version Cache
 .fvm/
