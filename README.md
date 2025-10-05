@@ -73,10 +73,28 @@ Meta targets are ignored:
 .PHONY: analyze format tidyup
 ```
 
-## Test
+## Architecture
+
+### Entrypoint and server
+
+The CLI entrypoint in `bin/make_tools.dart` parses the Makefile first, fails fast on errors, then constructs an MCP server. The server receives a pre-parsed list of targets and registers each one as a tool. When the host invokes a tool, the server runs `make <target>` in a subprocess and returns combined stdout/stderr; non‑zero exit codes are surfaced as errors.
+
+### Makefile parsing
+
+The parser in `lib/makefile.dart` reads lines and extracts targets with optional titles and descriptions. Consecutive `#` lines immediately above a target form a doc block; a single `#` line acts as the title/description separator. Lines starting with `#!` inside the block are ignored. Meta-targets beginning with a dot are skipped.
+
+### Command execution
+
+The runner in `lib/runner.dart` abstracts subprocess execution through `MakeCommandRunner`. The default implementation shells out to `make`, capturing exit code, stdout, and stderr. Tests replace this with a mock.
+
+### Debugging client
+
+The interactive client in `tool/debug_client.dart` spawns the server over stdio, speaks MCP, pretty-prints JSON‑RPC messages, and supports `!list` to show the current tool registry. It can also forward arbitrary tool calls with optional JSON arguments.
+
+### Tests
+
+Unit tests cover parsing and server behavior. The server tests connect over in‑memory channels and use a mocked runner to assert outputs and error propagation without invoking real processes.
 
 ```bash
 dart test
 ```
-
-A sample command-line application providing basic argument parsing with an entrypoint in `bin/`.
