@@ -4,11 +4,15 @@ final class MakeTargetMeta {
   final String name;
   final String title;
   final String? description;
+  final String? runDirectory;
+  final String? originalTargetName;
 
   const MakeTargetMeta({
     required this.name,
     required this.title,
     this.description,
+    this.runDirectory,
+    this.originalTargetName,
   });
 }
 
